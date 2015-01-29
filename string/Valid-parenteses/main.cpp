@@ -3,31 +3,25 @@
 
 using namespace std;
 
+/*
+ * pop 操作之前检查empty
+ * string的不存在使用string::nops标示
+ *
+ */
 bool isValid(string s){
+	string left = "([{";
+	string right = ")]}";
 	stack<char> st;
 
-	for(int i=0;i<s.size();i++){
-		if(s[i] == '(' || s[i] == '[' || s[i] == '{'){
-			st.push(s[i]);
-		}else if(s[i] == ')'){
-			if(!st.empty()  && st.top() == '('){
-				st.pop();
-			}else{
+	auto iter = right.begin();
+	for(auto c : s){{
+		if(left.find(c) != string::npos){
+			st.push(c);
+		}else if((iter = right.find(c) != right.end())){
+			if(st.empty() || st.top() != left[iter])	
 				return false;
-			}
-		}else if(s[i] == '['){
-			if(!st.empty() && st.top() == ']'){
+			else
 				st.pop();
-			}else{
-				return false;
-			}
-		}else if(s[i] == '{'){
-			if(!st.empty() && st.top() == '}'){
-				st.pop();
-			}else{
-				return false;
-			}
-		}else{
 		}
 	}
 

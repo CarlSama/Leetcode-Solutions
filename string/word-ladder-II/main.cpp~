@@ -1,0 +1,59 @@
+#include<iostream>
+#include<vector>
+#include<unordered_set>
+using namespace std;
+
+bool canTrans(string src,string dest){
+	int diff = 0;
+	int len = src.size();
+
+	for(int i=0;i<len;i++)
+		diff += (src[i]!=dest[i]);
+	
+	return diff==1;
+}
+
+void solve(string curr,string end, vector<string> &path,vector<vector<string> > &res,unordered_set<string> &dict){
+	if(canTrans(curr,end)){
+		path.push_back(curr);
+		path.push_back(end);
+		res.push_back(path);
+		path.pop_back();
+		path.pop_back();
+		return ;
+	}
+
+	for(auto iter=dict.begin();iter!=dict.end();iter++){
+		if(canTrans(curr, *iter)){
+			path.push_back(curr);
+			solve(*iter, end,path,res,dict);
+			path.pop_back();
+		}
+	}
+}
+
+vector<vector<string>> findLadders(string start, string end, unordered_set<string> &dict) {
+	vector<string> path;
+	vector<vector<string> >res;
+	solve(start,end,path,res,dict);
+	return res;
+}
+
+int main(){
+	unordered_set<string> dict;
+	dict.insert("hot");
+	dict.insert("dot");
+	dict.insert("dog");
+	dict.insert("lot");
+	dict.insert("log");
+	vector<vector<string> > res = findLadders("hit","cog",dict);
+
+	for(int i=0;i<res.size();i++){
+		for(int j=0;j<res[i].size();j++)
+			cout<<res[i][j]<<" ";
+		cout<<endl;
+	}
+	return 0;
+}
+	
+
