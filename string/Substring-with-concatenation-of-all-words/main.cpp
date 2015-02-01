@@ -1,8 +1,19 @@
 #include<iostream>
 #include<unordered_set>
 #include<vector>
+//#include<unorderded_map>
 
+#include<map>
 using namespace std;
+
+/*
+ * Becareule of 
+ * 1) dict has duplicate 
+ * 2)dict and string out of range
+ *
+ * 在使用S.size()时,可能存在S.size()比减数小的情况,这时结果会变成一个很大的数
+ * 因为S.size()为unsigned,结果也被认为时unsigned.要注意!
+ */
 
 /*
  * Backtracking
@@ -55,6 +66,8 @@ vector<int> findSubstring_bt(string S, vector<string> &L) {
 /*
  * Iteration
  * Move after finish
+ * 1)simple vector to check visited -> TLE !
+ * 2)may be hashing ? :)
  */
 bool hasStr(string str,vector<string> &L,vector<bool> &visited){
 	for(int i=0;i<L.size();i++){
@@ -72,7 +85,7 @@ bool allVisited(vector<bool> &visited){
 	return true;
 }
 
-vector<int> findSubstring(string S, vector<string> &L) {
+vector<int> findSubstring_vector(string S, vector<string> &L) {
 	vector<int> res;
 	if(S.size()==0 || L.size()==0)
 		return res;
@@ -103,14 +116,56 @@ vector<int> findSubstring(string S, vector<string> &L) {
 		
 
 
+/*
+ * At last, I find they all have to use copy as me ...
+ */
+inline void init(vector<string> &L,map<string,int> &dict){
+	for(auto str:L)
+		dict[str]++;
+}
+		
+vector<int> findSubstring(string S, vector<string> &L) {
+	vector<int> res;
+	if(S.size() == 0 || L.size()==0 || L.size() * L[0].size() > S.size())
+		return res;
+
+//	unorderded_map<string,int> dict;
+	map<string,int> dict;
+	init(L,dict);
+
+	int subLen = L[0].size();
+	int wordNum = L.size();
+	int wholeLen = subLen * wordNum;
+
+	for(int i=0;i<=(int)S.size() - wholeLen;i++){
+		auto dictCopy(dict);
+		int j = 0;
+		//We may have a dict longer than string
+		for(j = 0; j<wholeLen && (i+j)<= S.size() - subLen; j+=subLen){
+			auto str = S.substr(i+j,subLen);
+			auto iterDict = dictCopy.find(str);
+			if(iterDict == dictCopy.end())
+				break;
+			
+			if(iterDict->second > 1){
+				iterDict->second--;
+			}else if(iterDict->second == 1){
+				dictCopy.erase(iterDict);
+			}
+		}
+		if(j == wholeLen)//We have check all the words in dict
+			res.push_back(i);
+	}
+	return res;
+}
+
+
+
 int main(){
-	string s("lingmindraboofooowingdingbarrwingmonkeypoundcake");
+	string s("a");
 	vector<string> l;
-	l.push_back("fooo");
-	l.push_back("barr");
-	l.push_back("ding");
-	l.push_back("wing");
-	l.push_back("wing");
+	l.push_back("a");
+	l.push_back("a");
 
 	vector<int> res = findSubstring(s,l);
 	for(auto i:res)
