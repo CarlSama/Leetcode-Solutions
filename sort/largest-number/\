@@ -1,0 +1,89 @@
+#include<iostream>
+#include<vector>
+#include<algorithm>
+
+using namespace std;
+
+bool judge(int a, int b,bool &isJudged){
+	if(a<=9 && b<=9){
+		if(a!=b){
+			isJudged = true;
+			return a<b;
+		}else{
+			return 0;
+		}
+	}
+
+	bool res;
+	if(a>9 && b>9){
+		res = judge(a/10, b/10, isJudged);
+		if(isJudged)
+			return res;
+		else{
+			if(a%10 != b%10){
+				isJudged = true;
+				return a%10 < b%10;
+			}else
+				return 0;
+		}
+	}else if(a > 9){
+		res = judge(a/10, b , isJudged);
+		if(isJudged)
+			return res;
+		else {
+			if(a%10 != b){
+				isJudged = true;
+				return a%10 < b;
+			}else 
+				return 0;
+		}
+	}else{ //b>9
+		res = judge(a, b/10, isJudged);
+		if(isJudged)
+			return res;
+		else{
+			if(a != b%10){
+				isJudged = true;
+				return a < b%10;
+			}else
+				return 0;
+		}
+	}
+}
+
+bool isSmaller(int a, int b){
+	bool isJudged = false;
+	return judge(a, b, isJudged);
+}
+
+string intToString(int i){
+	if(i<=9)
+		return string((char)(i+'0'));
+	else
+		return intToString(i/10) + (string)(char)(i%10 + '0');
+}
+
+string largestNumber(vector<int> &num){
+	string res;
+	make_heap(num.begin(),num.end(),isSmaller);
+	while( !num.empty()){
+		res += intToString(num.front());
+		pop_heap(num.begin(),num.end(),isSmaller);
+		num.pop_back();
+	}
+	return res;
+}
+
+int main(){
+	vector<int> num;
+	num.push_back(3);
+	num.push_back(30);
+	num.push_back(34);
+	num.push_back(5);
+	num.push_back(9);
+
+	cout<<largestNumber(num)<<endl;
+
+	return 0;
+}
+
