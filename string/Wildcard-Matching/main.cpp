@@ -80,6 +80,20 @@ bool isMatch(const char*s, const char* p){
 	return *pptr=='\0';
 }
 
+/*
+ * DP
+ * if p[j-1]=='*'
+ *		for(i = 1 -> len)
+ *			dp[i][j] = dp[i][j-1];
+ * else 
+ *		for(i = 1 -> len)
+ *			dp[i][j] == dp[i-1][j-1]
+ */
+
+bool isMatch(const char*s, const char* p){
+	int len2 = strlen(p);
+
+
 int main(){
 	cout<<(isMatch("a", "*")== true)<<endl;
 	cout<<(isMatch("aa", "a*")== true)<<endl;

@@ -45,7 +45,7 @@ int longestValidParentheses_dp(string s){
  * We use an array to indicate wether one position has been match. After one pass, accumulate continuous 1 for ans.
  * Time compliexity : O(n) but two pass.
  */
-int longestValidParentheses(string s){
+int longestValidParentheses_mix(string s){
 	stack<int> st;
 	vector<bool> visited(s.size(),false);
 
@@ -60,7 +60,8 @@ int longestValidParentheses(string s){
 		}
 	}
 
-	int maxLen = 0,int subLen = 0;
+	int maxLen = 0;
+	int subLen = 0;
 	for(int i=0;i<visited.size();i++){
 		if(visited[i])
 			subLen++;
@@ -68,6 +69,41 @@ int longestValidParentheses(string s){
 			subLen = 0;
 		}
 		maxLen = max(subLen,maxLen);//compare each time to avoid forgeting the last continous 1 till end of visited :(
+	}
+
+	return maxLen;
+}
+
+/*
+ * Stack
+ * In stack+visited, we use vector to indicate the match.But can we calculating while move, that is finishing in only one pass ?
+ * Here is a situation we need to be careful, "()()()",each time we match '(' and ')',the length we get is more than just 2.
+ * How can we manage this situation ?
+ * We need a indication, which implies the front position of continus '(' and ')'.
+ * If the stack is not empty, that means we have more '(' than ')' , then the front is continus. we can use i-st.top() to calculate.
+ * If the stack is empty, that emas we have more ')' now, let's move indication.
+ */
+int longestValidParentheses(string s){
+	stack<int> st;
+	int last = -1;//the lasts occurance of unmatched ')'
+	int maxLen = 0;
+
+	for(int i=0;i<s.size();i++){
+		if(s[i] == '(')
+			st.push(i);
+		else{
+			if(st.empty()){
+				last = i;
+			}else{
+				st.pop();
+
+				if(st.empty()){
+					maxLen = max(maxLen, i-last);
+				}else{
+					maxLen = max(maxLen, i-st.top());
+				}
+			}
+		}
 	}
 
 	return maxLen;

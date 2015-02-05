@@ -3,6 +3,12 @@
 
 using namespace std;
 
+/*
+ * Method 1 :
+ * violence ... So hard...
+ * Give up
+ */
+
 void pop_back(string &res){
 	if(res.empty() || res == "/")
 		return ;
@@ -21,7 +27,7 @@ void safeSlash(string &res){
 	res += '/';
 }
 
-string	simplifyPath(string path){
+string	simplifyPath_vio(string path){
 	int len = path.size();
 
 	string res ;
@@ -61,6 +67,7 @@ string	simplifyPath(string path){
 				}else{
 					safeSlash(res);
 				}
+
 			}else{
 				safeSlash(res);
 			}
@@ -74,6 +81,12 @@ string	simplifyPath(string path){
 
 	return res;
 }
+
+/*
+ * Pre-operation and sotred in a stack
+ */
+int atoi(const char* str){
+	string s(str);
 
 int main(){
 	cout<<simplifyPath("/home/")<<endl;
