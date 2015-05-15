@@ -1,6 +1,8 @@
 #include<iostream>
 #include<vector>
 #include<algorithm>
+#include<bitset>
+#include<cmath>
 #include"print.h"
 using namespace std;
 
@@ -14,7 +16,9 @@ class Solution {
 		vector<int> path;
 		int currIdx;
 	public:
-		void btrack(vector<vector<int> >& res, vector<int> &path,vector<int>& nums,int currIdx){
+		// Recurssion method
+		// Time O(2^N)
+		/*void btrack(vector<vector<int> >& res, vector<int> &path,vector<int>& nums,int currIdx){
 			if(currIdx == nums.size()){
 				res.push_back(path); return ;
 			}
@@ -27,6 +31,25 @@ class Solution {
 			currIdx = 0;
 			sort(nums.begin(),nums.end());
 			btrack(res,path,nums,currIdx);
+			return res;
+		}*/
+
+		//Iteration
+		//因为每个元素只有两种状态，选中（１）和不选（０）
+		//可以使用Ｂｉｔ来模拟各种选择的状态
+		//Time O(2^N * N)
+		vector<vector<int> > subsets(vector<int>& nums) {//bit manipulation
+			sort(nums.begin(),nums.end());
+
+			int len = nums.size();
+			long long stateNum = pow(2,len);
+			vector<vector<int> > res(stateNum,vector<int>());
+			for(long long i=0;i<stateNum;++i){
+				for(int j=0;j<len;++j){
+					if(i&(1<<j))
+						res[i].push_back(nums[j]);
+				}
+			}
 			return res;
 		}
 };
