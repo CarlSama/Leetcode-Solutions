@@ -1,8 +1,13 @@
 #include<iostream>
 #include<vector>
+#include<algorithm>
 #include"print.h"
 using namespace std;
 
+/*
+ * Be attention ..
+ * We need give non-descending order
+ */
 class Solution {
 	private:
 		vector<vector<int> > res;
@@ -13,19 +18,20 @@ class Solution {
 			if(currIdx == nums.size()){
 				res.push_back(path); return ;
 			}
+			btrack(res,path,nums,currIdx+1);
 			path.push_back(nums[currIdx]);
 			btrack(res,path,nums,currIdx+1);
 			path.pop_back();
-			btrack(res,path,nums,currIdx+1);
 		}
 		vector<vector<int> > subsets(vector<int>& nums) {
 			currIdx = 0;
+			sort(nums.begin(),nums.end());
 			btrack(res,path,nums,currIdx);
 			return res;
 		}
 };
 int main(){
-	int arr[3] = {1,2,3};
+	int arr[3] = {4,1,0};
 	vector<int> nums(arr,arr+3);
 	Solution s;
 	vector<vector<int> > res = s.subsets(nums); 
