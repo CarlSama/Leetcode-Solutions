@@ -20,9 +20,12 @@ class Solution {
 				++nextIdx;
 
 			//we have nextIdx-currIdx same elem, so there are nextIdx-currIdx+1 situation
-			for(int count=0;count<=nextIdx-currIdx;++count){
+			for(int count=nextIdx-currIdx;count>=0;--count){
+				for(int i=0;i<count;++i)
+					path.push_back(nums[currIdx]);
 				btrack(res,path,nums,nextIdx);
-				path.push_back(nums[currIdx]);
+				for(int i=0;i<count;++i)
+					path.pop_back();
 			}
 		}
 		vector<vector<int> > subsetsWithDup(vector<int>& nums) {
