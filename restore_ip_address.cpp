@@ -33,9 +33,11 @@ class Solution {
 			}	
 			return false;
 		}*/
+		//不能出现01
 		void btrack(vector<string>& res,string& path,int dotNum,string& s,int currIdx,int currNum){
 			if(currNum > 255)	return ;
 			if(dotNum == 3){//现在我们只需要检测最后一个
+				if(currNum == 0 && currIdx != s.size())	return ;//不能以0开头
 				//将后面的全部放入path中
 				int idx = currIdx;
 				while(s[idx]){
@@ -58,9 +60,11 @@ class Solution {
 			btrack(res,path,dotNum+1,s,currIdx+1,s[currIdx]-'0');
 			path.pop_back();	path.pop_back();
 
-			path.push_back(s[currIdx]);
-			btrack(res,path,dotNum,s,currIdx+1,(currNum * 10 + s[currIdx] - '0'));
-			path.pop_back();
+			if(currNum != 0){//不能以0开头
+				path.push_back(s[currIdx]);
+				btrack(res,path,dotNum,s,currIdx+1,(currNum * 10 + s[currIdx] - '0'));
+				path.pop_back();
+			}
 		}
 		vector<string> restoreIpAddresses(string s) {
 			if(s.size() < 4 || s.size() > 12) return res;
@@ -71,7 +75,7 @@ class Solution {
 };
 
 int main(){
-	string s = "25525511135";
+	string s = "010010";
 	Solution so;
 	vector<string> res = so.restoreIpAddresses(s);
 	Freeman::print(res);
