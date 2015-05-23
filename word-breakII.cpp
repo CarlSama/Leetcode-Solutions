@@ -3,75 +3,79 @@
 #include<vector>
 #include<unordered_set>
 #include<algorithm>
+#include<unordered_map>
 #include"print.h"
+#include<climits>
 using namespace std;
 class Solution {
 	private:
-		string subStr,str;
-		vector<string> res;
-		unordered_set<string> myDict;
-		int longestLen;
+		int len;
+		int maxLen;
 	public:
-		void btrack(string s,int currIdx,string& subStr){
-			if(currIdx == s.size()){
-				if(subStr.size()==0){
-					res.push_back(str);
-				}else if(myDict.find(subStr)!=myDict.end()){
-					string origStr(str);
-					str+= ' ';
-					str += subStr;
-					res.push_back(str);
-
-					str = origStr;
-				}
-				return ;
-			}
-			//not merge current -> subStr must be valid
-			if(myDict.find(subStr)!=myDict.end()){
-				string origStr(str);
-				string origSubStr(subStr);
-
-				str+= ' ';//always have a leading blank 
-				str += subStr;
-				subStr = s[currIdx];
-				btrack(s,currIdx+1,subStr);
-				subStr = origSubStr;
-				str = origStr;
-			}
-
-
-			subStr.push_back(s[currIdx]);
-			if(subStr.size() <= longestLen)//too long to discard 
-				btrack(s,currIdx+1,subStr);
-			subStr.pop_back();
-		}
-		void getLongestLen(){
-			longestLen = 0;
-			for(auto iter=myDct.begin();iter!=myDict.end();++iter){
-				longestLen = max(longestLen, (int)(*iter).size());
-			}
+		void getMaxLen(unordered_set<string> &wordDict){
+			maxLen = 0;
+			for(auto str : wordDict)
+				maxLen = maxLen > str.size() ? maxLen : str.size();
 		}
 
 		vector<string> wordBreak(string s, unordered_set<string>& wordDict) {
-			myDict = wordDict;
-			getLongestLen();
-			btrack(s,0,subStr);
-			return res;
+			len = s.size();
+			getMaxLen(wordDict);
+
+			unordered_map<int,vector<string> > hashmap;
+			vector<string> emptyVS;	emptyVS.push_back(string(""));
+			hashmap.insert(pair<int,vector<string> >(-1,emptyVS));
+
+			for(int i=0;i<len;++i){
+				for(int j=i;i-j+1<=maxLen&&j>=0;--j){
+					string subStr = s.substr(j,i-j+1);
+					if(wordDict.find(subStr)!=wordDict.end()){
+						auto hashIter =  hashmap.find(j-1);
+						if(hashIter != hashmap.end()){
+							vector<string> frontVS = hashIter->second;
+							auto destIter = hashmap.find(i);
+							if(destIter == hashmap.end()){
+								vector<string> newVS;
+								for(int i=0;i<frontVS.size();++i){
+									string str;
+									if(frontVS[i].size() > 0){
+										str = frontVS[i];	str += ' ';
+									}
+									str += subStr;
+
+									newVS.push_back(str);
+								}
+								hashmap.insert(pair<int,vector<string> >(i, newVS));
+							}else{//已有记录
+								string str;
+								for(int i=0;i<frontVS.size();++i){
+									if(frontVS[i].size() > 0){
+										str = frontVS[i];	str += ' ';
+									}
+									str += subStr;
+									(destIter->second).push_back(str);
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			auto resIter = hashmap.find(len-1);
+			if(resIter==hashmap.end())
+				return vector<string>();
+			else
+				return resIter->second;
 		}
 };
 int main(){
-	string str("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab"); 
+	string str("catsanddog"); 
 	unordered_set<string> dict;
-	dict.insert("a");
-	dict.insert("aa"); 
-	dict.insert("aaa");
-	dict.insert("aaaa"); 
-	dict.insert("aaaaa");
-	dict.insert("aaaaaa");
-	dict.insert("aaaaaaa");
-	dict.insert("aaaaaaaa");
-	dict.insert("aaaaaaaaa");
-	dict.insert("aaaaaaaaaa");
+	/*dict.insert("cat");
+	dict.insert("cats"); 
+	dict.insert("and");
+	dict.insert("sand"); 
+	dict.insert("dog");*/
 	Solution s;
 	vector<string> res = s.wordBreak(str,dict);
 	Freeman::print(res);
