@@ -13,8 +13,10 @@ using namespace std;
  * dp[i] = dp[j] && inDict(s.substr(j,i)) j<=i
  */
 class Solution {
+	int maxLen;
+	bool isValid;
 	public:
-		bool wordBreak(string s, unordered_set<string>& wordDict) {
+		/*bool wordBreak(string s, unordered_set<string>& wordDict) {
 			vector<bool> dp(s.size()+1,false);//dp[i] -> [0,i-1]
 			dp[0] = true;
 			for(int i=0;i<s.size();++i){
@@ -29,14 +31,48 @@ class Solution {
 				}
 			}
 			return dp[s.size()];
-	    }
+	    }*/
+		void btrack(string s,unordered_set<string>& wordDict,int curr,string &tmpStr){
+			if(isValid) return ;
+
+			if(curr == s.size()){
+				isValid = wordDict.find(tmpStr) != wordDict.end();
+				return ;
+			}
+
+			if(tmpStr.size() > maxLen || tmpStr.size()==maxLen && wordDict.find(tmpStr)==wordDict.end()) return ;
+
+			tmpStr.push_back(s[curr]);//append
+			btrack(s,wordDict,curr+1,tmpStr);
+			tmpStr.pop_back();
+
+			if(!isValid && wordDict.find(tmpStr) != wordDict.end()){//use as new
+				string str(tmpStr);
+				tmpStr = s[curr];
+				btrack(s,wordDict,curr+1,tmpStr);
+				tmpStr = str;
+			}
+		}
+		int getMaxLen(unordered_set<string>& wordDict){
+			maxLen = 0;
+			for(auto str : wordDict)
+				maxLen = maxLen > str.size() ? maxLen : str.size();
+		}
+		bool wordBreak(string s, unordered_set<string>& wordDict) {
+			getMaxLen(wordDict);
+			string tmpStr;
+			isValid = false;
+			btrack(s,wordDict,0,tmpStr);
+			return isValid;
+		}
+
 };
 int main(){
-	string str = "leetcode";
-	string str1 = "leecode";
+	string str = "letcd";
+	string str1 = "lecde";
 	unordered_set<string> dict;
-	dict.insert("leet");
-	dict.insert("code");
+	dict.insert("let");
+	dict.insert("cd");
 	Solution s;
 	cout<<s.wordBreak(str,dict)<<endl;
 	cout<<s.wordBreak(str1,dict)<<endl;

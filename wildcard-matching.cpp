@@ -1,5 +1,7 @@
 #include<iostream>
+#include<vector>
 #include<string>
+#include"print.h"
 using namespace std;
 
 class Solution {
@@ -42,7 +44,8 @@ class Solution {
 			return btrackCheck(s,0,p,0);
 		}*/
 
-		bool isMatch(string s, string p){
+		/*
+		bool isMatch_greedy(string s, string p){
 			slen = s.size();	plen = p.size();
 
 			// Yes, It's working
@@ -98,76 +101,64 @@ class Solution {
 				return pidx == plen;
 			}
 			if(pidx == plen)	return false;
-		}
-	
-		/*int getFront(string& p){
-			int idx = 0;
-			while(idx < plen && p[idx] != '*')
-				++idx;
-			return idx;
-		}
-		int getBack(string& p){
-			int idx = p.size()-1;
-			while(idx >= 0 && p[idx] != '*')
-				--idx;
-			return idx;
-		}
-		bool isMatch(string s, string p){
-			plen = p.size();	slen = s.size();
-
-			if(slen == 0){
-				int idx = 0;
-				while(idx < plen && p[idx]=='*')
-					++idx;
-				return idx == plen;
-			}
-
-			if(plen == 0)	return slen == 0;
-			int front = getFront(p);// front==0 indicate begin with '*'
-			if(front == plen){
-				int sidx=0,pidx=0;
-				while(sidx<slen && pidx<plen && isSame(s[sidx],p[pidx])){
-					++sidx;		++pidx;
-				}
-				return sidx==slen&&pidx==plen;
-			}
-
-			//at least one '*'
-			int back = getBack(p);
-			for(int i=0; i<front ;++i){// compare front
-				if(i == slen) return false;
-				if(	!isSame(s[i],p[i]))
-					return false;
-			}
-
-			for(int j=0; j<plen-back; ++j){
-				int sidx = slen - j;
-				int pidx = plen - j;
-				if(sidx < front) return false;
-				if( !isSame(s[sidx],p[pidx]) )
-					return false;
-			}
-
-			return true;
 		}*/
+	
+		bool isMatch_dp(string s, string p){
+			int m = s.size();
+			int n = p.size();
+
+			int numStar=0;
+			for(int i=0;i<n;++i)
+				if(p[i] == '*')
+					++numStar;
+			if(n - numStar > m)	return false;
+
+			vector<vector<bool> > dp(2,vector<bool>(n+1,false));
+
+			dp[0][0] = true;
+			for(int i=1;i<=n && dp[0][i-1];++i){
+				if(p[i-1] == '*')
+					dp[0][i] = true;
+			}
+
+
+			for(int i=1;i<=m;++i){
+				dp[i%2][0] = false;
+				for(int j=1;j<=n;++j){
+					if(p[j-1] != '*'){
+						if(isSame(s[i-1], p[j-1]) && dp[(i-1)%2][j-1])
+							dp[i%2][j] = true;
+						else
+							dp[i%2][j] = false;
+					}else{
+						if(dp[(i-1)%2][j] || dp[i%2][j-1])
+							dp[i%2][j] = true;
+						else
+							dp[i%2][j] = false;
+					}
+				}
+			}
+			return dp[m%2][n];
+		}
 };
 
 int main(){
 	Solution s;
-	cout<<s.isMatch("aa","a")<<endl;  
-	cout<<s.isMatch("aa","aa")<<endl;
-	cout<<s.isMatch("aaa","aa")<<endl;
-	cout<<s.isMatch("aa", "*")<<endl; 
-	cout<<s.isMatch("aa", "a*")<<endl;
-	cout<<s.isMatch("ab", "?*")<<endl;
-	cout<<s.isMatch("aab", "c*a*b")<<endl;
-	cout<<s.isMatch("b", "?*?")<<endl;
+	cout<<s.isMatch_dp("aa","a")<<endl;  
+	cout<<s.isMatch_dp("aa","aa")<<endl;
+	cout<<s.isMatch_dp("aaa","aa")<<endl;
+	cout<<s.isMatch_dp("aa", "*")<<endl; 
+	cout<<s.isMatch_dp("aa", "a*")<<endl;
+	cout<<s.isMatch_dp("ab", "?*")<<endl;
+	cout<<s.isMatch_dp("aab", "c*a*b")<<endl;
+	cout<<s.isMatch_dp("b", "?*?")<<endl;
 
 	cout<<endl;
-	cout<<s.isMatch("abc","*abc");
-	cout<<s.isMatch("abc","abc*");
-	cout<<s.isMatch("abc","a*bc");
-	cout<<s.isMatch("abc","a*b*c");
-	cout<<s.isMatch("aaa","*aaaa*");
-
+	cout<<s.isMatch_dp("a","*a");
+	cout<<s.isMatch_dp("abc","abc*");
+	cout<<s.isMatch_dp("abc","a*bc");
+	cout<<s.isMatch_dp("abc","a*b*c");
+	cout<<s.isMatch_dp("aaa","*aaaa*");
+	cout<<endl<<endl;
+	cout<<s.isMatch_dp("abcdefde","abc*def");
 }
