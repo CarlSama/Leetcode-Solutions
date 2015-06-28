@@ -29,13 +29,30 @@ class Solution {
             return true;
         }
 
-        bool isValidSudoku(vector<vector<char> >& board) {
+        bool isValidSudoku-simple(vector<vector<char> >& board) {
             for(int i=0;i<colNum;++i)
                 for(int j=0;j<rowNum;++j) 
                     if( !isValid(board,i,j) )
                         return false;
             return true;
         }
+        bool isValidSudoku(vector<vector<char> >& board) {
+			//matrixExist的横坐标表示第几个矩形
+			bool rowExist[9][9]={false}, colExist[9][9]={false}, matrixExist[9][9]={false};
+
+			for(int col=0;col<board.size();++col) {
+				for(int row=0;row<board[0].size();++row) {
+					if(board[col][row] != '.') {
+						int num = board[col][row] - '1';
+						int idxForMatrix = row / 3 + col / 3 * 3;
+						if(colExist[col][num] || rowExist[num][row] || matrixExist[idxForMatrix][num])
+							return false;
+						colExist[col][num] = rowExist[num][row] = matrixExist[idxForMatrix][num] = true;
+					}
+				}
+			}
+			return true;
+		}
 };
 int main(){
 }
