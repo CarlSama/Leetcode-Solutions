@@ -5,6 +5,12 @@
 #include<climits>
 #include"print.h"
 using namespace std;
+
+/*
+ * (1) 是遍历每一位a-z　还是　直接在字典中寻找只想差１个char的？
+ * (2) 深度搜索会超时
+ * (3) 能否修改传入的dict ?
+ */
 class Solution {
 	private:
 		vector<vector<string> >res;
@@ -16,10 +22,17 @@ class Solution {
 		void btrack(string str){
 			if(str == endStr){
 				path.push_back(endStr);
-				if(res.size() > 0 && res[0].size() > path.size())
-					res.clear();
-				if(res.size() == 0 || res[0].size() >= path.size())
+
+				//没有存储内容　或　存储的长度与路径长度相同
+				if(res.size() == 0 || res[0].size() == path.size())
 					res.push_back(path);	
+
+				//路径长度更短
+				if( res[0].size() > path.size())
+					res.clear();
+
+				//路径长度更长，则不过考虑
+
 				path.pop_back();
 				currLeastLen = res[0].size();
 				return ;

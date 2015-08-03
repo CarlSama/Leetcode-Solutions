@@ -26,7 +26,6 @@ class Solution {
 			}
 			return -1;
 		}
-
 };
 int main(){
 	int arr[6] = {5,1,3,0,1,2};
